@@ -1,0 +1,435 @@
+Switch five-step boot sequence
+    1.Loads POST program stored in ROM. Program checks
+    the CPU subsystem, CPU, DRAM and portion of flash device
+    2.Loads the boot loader software
+    3.boot loader performs low level CPU initialization of its registers which control 
+    where physical memotry is mapped, quality of memory and its speed
+    4.boot loader initializes the flash file
+    5.boot loader loads operating system image on switch
+
+LEDs on Switch
+
+SYST - System LED
+    Shows whether the system is receiving power and is functioning properly.
+        - off - system not powered on
+        - green - system operating normally
+        - amber - receiving power but not functioning properly
+RPS - Redundant Power System
+        - off - the RPS is off
+        - green -  connected and ready to provide backup power
+        - blinking green - connected but is unavailable because it is providing power to another device
+        - amber -  is in standby mode, or in a fault condition
+        - blinking amber - the internal power supply in the switch has failed, and the RPS is providing power.
+STAT
+DUPLX
+SPEED
+PoE
+
+The first parameter (FastEthernet0/18 is up) refers to the hardware layer and indicates whether the interface is receiving a carrier detect signal. The second parameter (line protocol is up) refers to the data link layer and indicates whether the data link layer protocol keepalives are being received.
+
+“Input errors” is the sum of all errors in datagrams that were received on the interface being examined. This includes runts, giants, CRC, no buffer, frame, overrun, and ignored counts. The reported input errors from the show interfaces command include the following:
+
+Runt Frames - Ethernet frames that are shorter than the 64-byte minimum allowed length are called runts. Malfunctioning NICs are the usual cause of excessive runt frames, but they can also be caused by collisions.
+Giants - Ethernet frames that are larger than the maximum allowed size are called giants.
+CRC errors - On Ethernet and serial interfaces, CRC errors usually indicate a media or cable error. Common causes include electrical interference, loose or damaged connections, or incorrect cabling. If you see many CRC errors, there is too much noise on the link and you should inspect the cable. You should also search for and eliminate noise sources.
+“Output errors” is the sum of all errors that prevented the final transmission of datagrams out the interface that is being examined. The reported output errors from the show interfaces command include the following:
+
+Collisions - Collisions in half-duplex operations are normal. However, you should never see collisions on an interface configured for full-duplex communication.
+Late collisions - A late collision refers to a collision that occurs after 512 bits of the frame have been transmitted. Excessive cable lengths are the most common cause of late collisions. Another common cause is duplex misconfiguration. For example, you could have one end of a connection configured for full-duplex and the other for half-duplex. You would see late collisions on the interface that is configured for half-duplex. In that case, you must configure the same duplex setting on both ends. A properly designed and configured network should never have late collisions.
+
+Use the show interfaces command to check the interface status.
+
+If the interface is down:
+
+Check to make sure that the proper cables are being used. Additionally, check the cable and connectors for damage. If a bad or incorrect cable is suspected, replace the cable.
+If the interface is still down, the problem may be due to a mismatch in speed setting. The speed of an interface is typically autonegotiated; therefore, even if it is manually applied to one interface, the connecting interface should autonegotiate accordingly. If a speed mismatch does occur through misconfiguration, or a hardware or software issue, then that may result in the interface going down. Manually set the same speed on both connection ends if a problem is suspected.
+If the interface is up, but issues with connectivity are still present:
+
+Using the show interfaces command, check for indications of excessive noise. Indications may include an increase in the counters for runts, giants, and CRC errors. If there is excessive noise, first find and remove the source of the noise, if possible. Also, verify that the cable does not exceed the maximum cable length and check the type of cable that is used.
+If noise is not an issue, check for excessive collisions. If there are collisions or late collisions, verify the duplex settings on both ends of the connection. Much like the speed setting, the duplex setting is usually autonegotiated. If there does appear to be a duplex mismatch, manually set the duplex to full on both ends of the connection.
+
+Routing---------------
+Configure an IPv4 next-hop static route on R2 to the 192.168.2.0/24 network using the next-hop address 192.168.1.1.
+
+R2(config)#ip route 192.168.2.0 255.255.255.0 192.168.1.1
+Configure a fully specified IPv4 static route on R2 to the 172.16.3.0/24 network using the exit interface/next-hop pair: g0/0/1 172.16.2.1
+
+R2(config)#ip route 172.16.3.0 255.255.255.0 g0/0/1 172.16.2.1
+Configure an IPv6 next-hop static route on R2 to the 2001:db8:cafe:2::/64 network using the next-hop address 2001:db8:cafe:1::1.
+
+R2(config)#ipv6 route 2001:db8:cafe:2::/64 2001:db8:cafe:1::1
+Configure a fully specified IPv6 static route on R2 to the 2001:db8:acad:3::/64 network using the exit interface/next-hop pair: g0/0/1 / fe80::1
+
+R2(config)#ipv6 route 2001:db8:acad:3::/64 g0/0/1 fe80::1
+Exit configuration mode and issue the command to display only the IPv4 static routes in the routing table of R2.
+
+R2(config)#exit
+*Sep 18 21:44:32.910: %SYS-5-CONFIG_I: Configured from console by console
+R2#show ip route static
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+Gateway of last resort is not set
+      172.16.0.0/16 is variably subnetted, 5 subnets, 2 masks
+S        172.16.3.0/24 [1/0] via 172.16.2.1, GigabitEthernet0/0/1
+S     192.168.2.0/24 [1/0] via 192.168.1.1
+Issue the command to display only the IPv6 static routes in the routing table of R2.
+
+R2#show ipv6 route static
+IPv6 Routing Table - default - 9 entries
+Codes: C - Connected, L - Local, S - Static, U - Per-user Static route
+       B - BGP, R - RIP, H - NHRP, I1 - ISIS L1
+       I2 - ISIS L2, IA - ISIS interarea, IS - ISIS summary, D - EIGRP
+       EX - EIGRP external, ND - ND Default, NDp - ND Prefix, DCE - Destination
+       NDr - Redirect, RL - RPL, O - OSPF Intra, OI - OSPF Inter
+       OE1 - OSPF ext 1, OE2 - OSPF ext 2, ON1 - OSPF NSSA ext 1
+       ON2 - OSPF NSSA ext 2, a - Application
+S   2001:DB8:ACAD:3::/64 [1/0]
+     via FE80::1, GigabitEthernet0/0/1
+S   2001:DB8:CAFE:2::/64 [1/0]
+     via 2001:DB8:CAFE:1::1
+==============================================================
+You are now logged into R3:
+
+Configure a directly connected IPv4 static route on R3 to the 172.16.3.0/24 network using exit interface S0/1/1.
+
+R3(config)#ip route 172.16.3.0 255.255.255.0 s0/1/1
+Configure a directly connected IPv4 static route on R3 to the 172.16.1.0/24 network using exit interface S0/1/1.
+
+R3(config)#ip route 172.16.1.0 255.255.255.0 s0/1/1
+Configure a directly connected IPv4 static route on R3 to the 172.16.2.0/24 network using exit interface S0/1/1.
+
+R3(config)#ip route 172.16.2.0 255.255.255.0 s0/1/1
+Configure a directly connected IPv6 static route on R3 to the 2001:db8:acad:1::/64 network using exit interface S0/1/1.
+
+R3(config)#ipv6 route 2001:db8:acad:1::/64 s0/1/1
+Configure a directly connected IPv6 static route on R3 to the 2001:db8:acad:3::/64 network using exit interface S0/1/1.
+
+R3(config)#ipv6 route 2001:db8:acad:3::/64 s0/1/1
+Configure a directly connected IPv6 static route on R3 to the 2001:db8:acad:2::/64 network using exit interface S0/1/1.
+
+R3(config)#ipv6 route 2001:db8:acad:2::/64 s0/1/1
+Exit configuration mode and issue the command to display only the IPv4 static routes in the routing table of R3.
+
+R3(config)#exit
+Sep 18 21:47:57.894: %SYS-5-CONFIG_I: Configured from console by console
+R3#show ip route static
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+Gateway of last resort is not set
+      172.16.0.0/24 is subnetted, 3 subnets
+S        172.16.1.0 is directly connected, Serial0/1/1
+S        172.16.2.0 is directly connected, Serial0/1/1
+S        172.16.3.0 is directly connected, Serial0/1/1
+Issue the command to display only the IPv6 static routes in the routing table of R3.
+
+R3#show ipv6 route static
+IPv6 Routing Table - default - 8 entries
+Codes: C - Connected, L - Local, S - Static, U - Per-user Static route
+       B - BGP, R - RIP, H - NHRP, I1 - ISIS L1
+       I2 - ISIS L2, IA - ISIS interarea, IS - ISIS summary, D - EIGRP
+       EX - EIGRP external, ND - ND Default, NDp - ND Prefix, DCE - Destination
+       NDr - Redirect, RL - RPL, O - OSPF Intra, OI - OSPF Inter
+       OE1 - OSPF ext 1, OE2 - OSPF ext 2, ON1 - OSPF NSSA ext 1
+       ON2 - OSPF NSSA ext 2, a - Application
+S   2001:DB8:ACAD:1::/64 [1/0]
+     via Serial0/1/1, directly connected
+S   2001:DB8:ACAD:2::/64 [1/0]
+     via Serial0/1/1, directly connected
+S   2001:DB8:ACAD:3::/64 [1/0]
+     via Serial0/1/1, directly connected
+You have successfully configured and verified IPv4 and IPv6 static routes.
+
+
+Configure an IPv4 default static route on R3 to reach all remote networks. Use the next-hop IPv4 address argument.
+
+R3(config)#ip route 0.0.0.0 0.0.0.0 192.168.1.2
+Configure an IPv6 default static route on R3 to reach all remote networks. Use the next-hop IPv6 address argument.
+
+R3(config)#ipv6 route ::/0 2001:db8:cafe:1::2
+Exit configuration mode and display only the static routes in the IPv4 routing table.
+
+R3(config)#exit
+*Sep 16 10:11:43.767: %SYS-5-CONFIG_I: Configured from console by console
+R3#show ip route static
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP   
+D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area   
+N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2   
+E1 - OSPF external type 1, E2 - OSPF external type 2   
+i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2   
+ia - IS-IS inter area, * - candidate default, U - per-user static route   
+o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP   
+a - application route 
++ - replicated route, % - next hop override   
+  
+Gateway of last resort is not set
+Display only the static routes in the IPv6 routing table.
+
+R3#show ipv6 route static
+IPv6 Routing Table - default - 1 entries
+Codes: C - Connected, L - Local, S - Static, U - Per-user Static route
+       B - BGP, R - RIP, H - NHRP, I1 - ISIS L1
+       I2 - ISIS L2, IA - ISIS interarea, IS - ISIS summary, D - EIGRP
+       EX - EIGRP external, RL - RPL, O - OSPF Intra, OI - OSPF Inter
+       OE1 - OSPF ext 1, OE2 - OSPF ext 2, ON1 - OSPF NSSA ext 1
+       ON2 - OSPF NSSA ext 2, a - Application 
+You have successfully configured and verified default static routes.
+
+
+
+Configure an IPv4 default static route on R3 using the next-hop address 192.168.1.2.
+
+R3(config)#ip route 0.0.0.0 0.0.0.0 192.168.1.2
+Configure an IPv4 default static route on R3 using the next-hop address 10.10.10.1 with an administrative distance of 5.
+
+R3(config)#ip route 0.0.0.0 0.0.0.0 10.10.10.1 5
+Configure an IPv6 default static route on R3 using the next-hop address 2001:db8:cafe:1::2
+
+R3(config)#ipv6 route ::/0 2001:db8:cafe:1::2
+Configure an IPv6 default route on R3 using the next-hop address 2001:db8:feed:10::1 with an administrative distance of 5.
+
+R3(config)#ipv6 route ::/0 2001:db8:feed:10::1 5
+Exit configuration mode and display the IPv4 routing table.
+
+R3(config)#exit
+*Sep 20 02:55:53.327: %SYS-5-CONFIG_I: Configured from console by console
+R3#show ip route
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP   
+D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area   
+N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2   
+E1 - OSPF external type 1, E2 - OSPF external type 2   
+i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2   
+ia - IS-IS inter area, * - candidate default, U - per-user static route   
+o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP   
++ - replicated route, % - next hop override   
+  
+Gateway of last resort is 192.168.1.2 to network 0.0.0.0  
+  
+S* 0.0.0.0/0 [1/0] via 192.168.1.2
+10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks
+C        10.10.10.0/24 is directly connected, Serial0/1/0
+L        10.10.10.2/32 is directly connected, Serial0/1/0
+      192.168.1.0/24 is variably subnetted, 2 subnets, 2 masks
+C        192.168.1.0/24 is directly connected, Serial0/1/1
+L        192.168.1.1/32 is directly connected, Serial0/1/1
+      192.168.2.0/24 is variably subnetted, 2 subnets, 2 masks
+C        192.168.2.0/24 is directly connected, GigabitEthernet0/0/0
+L        192.168.2.1/32 is directly connected, GigabitEthernet0/0/0
+Display the IPv6 routing table.
+
+R3#show ipv6 route
+IPv6 Routing Table - default - 8 entries
+Codes: C - Connected, L - Local, S - Static, U - Per-user Static route
+       B - BGP, R - RIP, H - NHRP, I1 - ISIS L1
+       I2 - ISIS L2, IA - ISIS interarea, IS - ISIS summary, D - EIGRP
+       EX - EIGRP external, ND - ND Default, NDp - ND Prefix, DCE - Destination
+       NDr - Redirect, RL - RPL, O - OSPF Intra, OI - OSPF Inter
+       OE1 - OSPF ext 1, OE2 - OSPF ext 2, ON1 - OSPF NSSA ext 1
+       ON2 - OSPF NSSA ext 2, a - Application
+S   ::/0 [1/0]
+     via 2001:DB8:CAFE:1::2
+C   2001:DB8:CAFE:1::/64 [0/0]
+     via Serial0/1/1, directly connected
+L   2001:DB8:CAFE:1::1/128 [0/0]
+     via Serial0/1/1, receive
+C   2001:DB8:CAFE:2::/64 [0/0]
+     via GigabitEthernet0/0/0, directly connected
+L   2001:DB8:CAFE:2::1/128 [0/0]
+     via GigabitEthernet0/0/0, receive
+C   2001:DB8:FEED:10::/64 [0/0]
+     via Serial0/1/0, directly connected
+L   2001:DB8:FEED:10::2/128 [0/0]
+     via Serial0/1/0, receive
+L   FF00::/8 [0/0]
+     via Null0, receive
+You have successfully configured and verified floating static routes.
+
+
+Display the routing tables on the Branch router.
+
+Issue the command to view the IPv4 routing table.
+Issue the command to view the IPv6 routing table.
+Branch#show ip route
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+Gateway of last resort is not set
+      198.51.100.0/24 is variably subnetted, 2 subnets, 2 masks
+C        198.51.100.0/30 is directly connected, Serial0/1/0
+L        198.51.100.1/32 is directly connected, Serial0/1/0
+Branch#show ipv6 route
+IPv6 Routing Table - default - 3 entries
+Codes: C - Connected, L - Local, S - Static, U - Per-user Static route
+       B - BGP, R - RIP, H - NHRP, I1 - ISIS L1
+       I2 - ISIS L2, IA - ISIS interarea, IS - ISIS summary, D - EIGRP
+       EX - EIGRP external, ND - ND Default, NDp - ND Prefix, DCE - Destination
+       NDr - Redirect, RL - RPL, O - OSPF Intra, OI - OSPF Inter
+       OE1 - OSPF ext 1, OE2 - OSPF ext 2, ON1 - OSPF NSSA ext 1
+       ON2 - OSPF NSSA ext 2, a - Application
+C   2001:DB8:ACAD:1::/64 [0/0]
+     via Serial0/1/0, directly connected
+L   2001:DB8:ACAD:1::1/128 [0/0]
+     via Serial0/1/0, receive
+L   FF00::/8 [0/0]
+     via Null0, receive
+Enter Global Configuration mode to configure the following:
+
+A static IPv4 route to a host at address 209.165.200.238 and an exit interface of s0/1/0.
+A static IPv6 route to a host at address 2001:db8:acad::2/128 and an exit interface of s0/1/0.
+Note: Be sure to use s0/1/0 as the interface designation.
+
+Branch#configure terminal
+Branch(config)#ip route 209.165.200.238 255.255.255.255 s0/1/0
+Branch(config)#ipv6 route 2001:db8:acad::2/128 s0/1/0
+Exit configuration mode and display the IPv4 and IPv6 routing tables.
+
+Branch(config)#exit
+*Sep 19 19:06:47.301: %SYS-5-CONFIG_I: Configured from console by console
+Branch#show ip route
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+Gateway of last resort is not set
+      198.51.100.0/24 is variably subnetted, 2 subnets, 2 masks
+C        198.51.100.0/30 is directly connected, Serial0/1/0
+L        198.51.100.1/32 is directly connected, Serial0/1/0
+      209.165.200.0/32 is subnetted, 1 subnets
+S        209.165.200.238 is directly connected, Serial0/1/0
+Branch#show ipv6 route
+IPv6 Routing Table - default - 4 entries
+Codes: C - Connected, L - Local, S - Static, U - Per-user Static route
+       B - BGP, R - RIP, H - NHRP, I1 - ISIS L1
+       I2 - ISIS L2, IA - ISIS interarea, IS - ISIS summary, D - EIGRP
+       EX - EIGRP external, ND - ND Default, NDp - ND Prefix, DCE - Destination
+       NDr - Redirect, RL - RPL, O - OSPF Intra, OI - OSPF Inter
+       OE1 - OSPF ext 1, OE2 - OSPF ext 2, ON1 - OSPF NSSA ext 1
+       ON2 - OSPF NSSA ext 2, a - Application
+C   2001:DB8:ACAD:1::/64 [0/0]
+     via Serial0/1/0, directly connected
+L   2001:DB8:ACAD:1::1/128 [0/0]
+     via Serial0/1/0, receive
+S   2001:DB8:ACAD:2::/128 [1/0]
+     via Serial0/1/0, directly connected
+L   FF00::/8 [0/0]
+     via Null0, receive
+You have successfully configured static host routes.
+
+Send a ping from R1 to the G0/0/0 interface on R3.
+
+R1#ping 192.168.2.1
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 192.168.2.1, timeout is 2 seconds:
+U.U.U
+Success rate is 0 percent (0/5)
+Test the next hop gateway by sending a ping from R1 to the S0/1/0 interface of R2.
+
+R1#ping 172.16.2.2
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 172.16.2.2, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 2/2/3 ms
+Review the routing table on R1.
+
+R1#show ip route
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+Gateway of last resort is not set
+      172.16.0.0/16 is variably subnetted, 5 subnets, 2 masks
+S        172.16.1.0/24 [1/0] via 172.16.2.2
+C        172.16.2.0/24 is directly connected, Serial0/1/0
+L        172.16.2.1/32 is directly connected, Serial0/1/0
+C        172.16.3.0/24 is directly connected, GigabitEthernet0/0/0
+L        172.16.3.1/32 is directly connected, GigabitEthernet0/0/0
+S     192.168.1.0/24 [1/0] via 172.16.2.2
+S     192.168.2.0/24 [1/0] via 172.16.2.2
+Review the routing table on R2.
+
+R2#show ip route
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+Gateway of last resort is not set
+      172.16.0.0/16 is variably subnetted, 5 subnets, 2 masks
+C        172.16.1.0/24 is directly connected, GigabitEthernet0/0/0
+L        172.16.1.1/32 is directly connected, GigabitEthernet0/0/0
+C        172.16.2.0/24 is directly connected, Serial0/1/0
+L        172.16.2.2/32 is directly connected, Serial0/1/0
+S        172.16.3.0/24 [1/0] via 172.16.2.1
+      192.168.1.0/24 is variably subnetted, 2 subnets, 2 masks
+C        192.168.1.0/24 is directly connected, Serial0/1/1
+L        192.168.1.2/32 is directly connected, Serial0/1/1
+Enter configuration mode and configure a static route on R2 to reach the R3 LAN.
+
+R2#configure terminal
+R2(config)#ip route 192.168.2.0 255.255.255.0 192.168.1.1
+Exit configuration mode and review the routing table on R2.
+
+R2(config)#exit
+*Sep 20 03:10:34.913: %SYS-5-CONFIG_I: Configured from console by console
+R2#show ip route
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+Gateway of last resort is not set
+      172.16.0.0/16 is variably subnetted, 5 subnets, 2 masks
+C        172.16.1.0/24 is directly connected, GigabitEthernet0/0/0
+L        172.16.1.1/32 is directly connected, GigabitEthernet0/0/0
+C        172.16.2.0/24 is directly connected, Serial0/1/0
+L        172.16.2.2/32 is directly connected, Serial0/1/0
+S        172.16.3.0/24 [1/0] via 172.16.2.1
+      192.168.1.0/24 is variably subnetted, 2 subnets, 2 masks
+C        192.168.1.0/24 is directly connected, Serial0/1/1
+L        192.168.1.2/32 is directly connected, Serial0/1/1
+S     192.168.2.0/24 [1/0] via 192.168.1.1
+Send a ping from R1 to the G0/0/0 interface on R3.
+
+R1#ping 192.168.2.1
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 192.168.2.1, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 3/3/4 ms
+You have successfully performed troubleshooting on IPv4 static and default routes.

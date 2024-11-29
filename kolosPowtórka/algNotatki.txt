@@ -1,0 +1,26 @@
+1.Sortowanie
+-stabilne (zachowuje kolejność elementów równej wartości)
+    +Bąbelkowe O(n^2)
+        for(i = 0 i<n)
+            for(i = 0 i<n)
+    +Przez wstawianie O(n^2)
+    +Przez scalanie (Merge Sort) O(nlog n)
+-niestabilne
+    +Przez wybór O(n^2)
+    +quick sort O(nlog n)
+
+2.Kolejka/Lista/Stos
+    -Kolejka
+        +implementacja i wykorzystanie
+            wskaźnikowa lub tablica dynamiczna
+    -Stos 
+        +implementacja i wykorzystanie
+            wskaźnikowa lub tablica dynamiczna
+3.Drzewa
+    -implementacja i wykorzystanie
+        +budowa Drzewa
+        +Drzewa binarne lub nie 
+            drzewo bst 
+        +znajdowanie elementu w drzewie
+        +przejście Drzewa  
+            inorder, preorder, postorder
